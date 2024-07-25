@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.play.services.wearable)
     implementation(platform(libs.compose.bom))
     implementation(libs.ui)
+    implementation ("androidx.wear:wear-input:1.0.0")
+    implementation ("androidx.wear:wear:1.2.0")
     implementation(libs.ui.tooling.preview)
     implementation(libs.compose.material)
     implementation(libs.compose.foundation)
