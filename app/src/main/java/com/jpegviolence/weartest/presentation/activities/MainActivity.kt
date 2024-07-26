@@ -18,21 +18,28 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import com.jpegviolence.weartest.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
 
 class MainActivity : ComponentActivity() {
-    val backHandler = Handler()
-    private var lastPressTime: Long = 0
-    val backButtonRunnable = Runnable {
-        Log.d("", "back")
-    }
+    var tapCount: Int = 0
+    var tapState: Boolean = false
+
+    private var doubleClickHandler: Handler = Handler(Looper.getMainLooper())
+    private var lastClickTime: Long = 0
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(android.R.style.Theme_DeviceDefault)
+        setTheme(R.style.AppTheme)
 
 
 
@@ -43,16 +50,20 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (event?.action == KeyEvent.ACTION_DOWN) {
-                if (event.eventTime >= 5000) {
-                    lastPressTime = event.eventTime
-                    Toast.makeText(this, event.eventTime.toString(), Toast.LENGTH_SHORT).show()
-                    return true
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+            if(keyCode == KeyEvent.KEYCODE_BACK) {
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime < 500) {
+                    Toast.makeText(this, "Двойное нажатие", Toast.LENGTH_SHORT).show()
+                    doubleClickHandler.removeCallbacksAndMessages(null)
+                } else {
+                    doubleClickHandler.postDelayed({
+                        Toast.makeText(this, "Одно нажатие", Toast.LENGTH_SHORT).show()
+                    }, 500)
                 }
+                lastClickTime = currentTime
+                return true
             }
-        }
         return super.onKeyDown(keyCode, event)
     }
 }

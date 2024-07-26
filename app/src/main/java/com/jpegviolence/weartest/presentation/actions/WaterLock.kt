@@ -14,6 +14,7 @@ class WaterLock {
         //val uri = Uri.fromParts("package", "com.jpegviolence.weartest", null)
         //intent.data = uri
         context.startActivity(intent)
+
     }
 
     fun enableWaterLock(activity: Activity) {
