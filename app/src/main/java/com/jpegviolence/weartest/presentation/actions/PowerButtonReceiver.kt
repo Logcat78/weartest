@@ -8,9 +8,6 @@ import android.util.Log
 class PowerButtonReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(intent?.action)) {
-            // Отменяем стандартное действие
-
-            //abortBroadcast()
 
         }
     }

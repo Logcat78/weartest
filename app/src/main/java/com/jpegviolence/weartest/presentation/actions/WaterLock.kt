@@ -11,8 +11,6 @@ class WaterLock {
     fun enablePermission(context: Context) {
         Toast.makeText(context, "Включите разрешение", Toast.LENGTH_LONG).show()
         val intent = Intent(Settings.ACTION_HOME_SETTINGS)
-        //val uri = Uri.fromParts("package", "com.jpegviolence.weartest", null)
-        //intent.data = uri
         context.startActivity(intent)
 
     }
