@@ -2,38 +2,28 @@
 
 package com.jpegviolence.weartest.presentation.activities
 
-import android.content.Intent
 import android.os.Bundle
-
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-
-import androidx.wear.input.WearableButtons
 import com.jpegviolence.weartest.presentation.ui.screens.MainScreen
-
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.jpegviolence.weartest.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.math.sqrt
+import com.jpegviolence.weartest.presentation.viewmodel.MainViewModel
+
 
 
 class MainActivity : ComponentActivity() {
-    var tapCount: Int = 0
-    var tapState: Boolean = false
+
+    companion object{
+        var viewmodel: MainViewModel = MainViewModel()
+    }
 
     private var doubleClickHandler: Handler = Handler(Looper.getMainLooper())
     private var lastClickTime: Long = 0
+    private var clickCount = 0
 
 
 
@@ -41,10 +31,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
 
-
+        viewmodel.apply {
+            count.value = 0
+            workStatus.value = false
+        }
 
         setContent {
-            MainScreen(this)
+            MainScreen()
         }
 
     }
@@ -52,17 +45,37 @@ class MainActivity : ComponentActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
             if(keyCode == KeyEvent.KEYCODE_BACK) {
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastClickTime < 500) {
-                    Toast.makeText(this, "Двойное нажатие", Toast.LENGTH_SHORT).show()
-                    doubleClickHandler.removeCallbacksAndMessages(null)
-                } else {
-                    doubleClickHandler.postDelayed({
-                        Toast.makeText(this, "Одно нажатие", Toast.LENGTH_SHORT).show()
-                    }, 500)
+                if(viewmodel.workStatus.value!!){
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime < 500) {
+                        clickCount++
+                        doubleClickHandler.postDelayed({
+                            if (clickCount > 1) {
+                                if(clickCount == 2){
+                                    if(viewmodel.count.value!= 0)
+                                        viewmodel.count.value = viewmodel.count.value!! - 1
+
+                                }else {
+                                    viewmodel.workStatus.value = false
+                                    Toast.makeText(this@MainActivity, "Тренировка завершена", Toast.LENGTH_SHORT).show()
+                                }
+                                clickCount = 0
+                                lastClickTime = currentTime
+                            }
+                        }, 200)
+
+                    } else {
+                        clickCount = 1
+                        doubleClickHandler.postDelayed({
+                            if (clickCount == 1) {
+                                viewmodel.count.value = viewmodel.count.value!! + 1
+                            }
+                            clickCount = 0
+                        }, 500)
+                    }
+                    lastClickTime = currentTime
+                    return true
                 }
-                lastClickTime = currentTime
-                return true
             }
         return super.onKeyDown(keyCode, event)
     }

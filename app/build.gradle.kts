@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.ui)
     implementation ("androidx.wear:wear-input:1.0.0")
     implementation ("androidx.wear:wear:1.2.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.8")
     implementation(libs.ui.tooling.preview)
     implementation(libs.compose.material)
     implementation(libs.compose.foundation)
